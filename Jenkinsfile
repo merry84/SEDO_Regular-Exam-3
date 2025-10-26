@@ -19,7 +19,7 @@ pipeline {
     }
 
     stage('Restore') {
-      when { branch 'main' }
+      
       steps {
         bat 'dotnet --info'
         bat 'dotnet restore Horizons.sln'
@@ -27,40 +27,28 @@ pipeline {
     }
 
     stage('Build') {
-      when { branch 'main' }
+      
       steps {
         bat 'dotnet build Horizons.sln --configuration Release --no-restore'
       }
     }
 
     stage('Test Unit') {
-      when { branch 'main' }
+     
       steps {
         bat 'dotnet test Horizons.Tests.Unit/Horizons.Tests.Unit.csproj --configuration Release --no-build --logger "trx;LogFileName=unit-tests.trx" --results-directory "TestResults/Unit"'
       }
-      post {
-        always {
-          junit allowEmptyResults: true, testResults: '**/TestResults/Unit/*.trx'
-        }
-      }
+      
     }
 
     stage('Test Integration') {
-      when { branch 'main' }
+     
       steps {
         bat 'dotnet test Horizons.Tests.Integration/Horizons.Tests.Integration.csproj --configuration Release --no-build --logger "trx;LogFileName=integration-tests.trx" --results-directory "TestResults/Integration"'
       }
-      post {
-        always {
-          junit allowEmptyResults: true, testResults: '**/TestResults/Integration/*.trx'
-        }
-      }
+     
     }
   }
 
-  post {
-    always {
-      archiveArtifacts artifacts: '**/TestResults/**/*.trx, **/bin/**/Release/**', allowEmptyArchive: true
-    }
-  }
+
 }
